@@ -1,0 +1,20 @@
+---
+# params
+# kb_id: KB identifier of the Windows Update to apply
+# output_file: file where to store the results
+- hosts: all
+  # avoid polluting even more the guest
+  gather_facts: no
+  tasks:
+    - name: apply Windows Update
+      win_updates:
+        state: installed
+        whitelist:
+          - "{{ kb_id }}"
+      register: wupdate_res
+
+    - name: write install results to a file
+      local_action:
+        module: copy
+        content: "{{ wupdate_res }}"
+        dest: "{{ output_file }}"
