@@ -15,6 +15,7 @@ import sys
 import logging
 import subprocess
 import json
+import time
 from pprint import pformat
 from tempfile import NamedTemporaryFile
 from pathlib import Path
@@ -96,7 +97,6 @@ def main(args):
             # also increase the read timeout, as Windows Updates might break WinRM connection for quite some time
             'ansible_winrm_read_timeout_sec': 60 * 3
         }
-        need_reboot = False
         installed = True
         with AnsiblePlaybook(host, apply_playbook, port, debug_lvl, user, password, evars) as ansible:
             ansible.run()
@@ -105,7 +105,9 @@ def main(args):
             need_reboot = res['reboot_required']
             installed = res['updates'][up_id]['installed']
         if need_reboot:
-            raise NotImplemented()
+            # wait for guest to be IDLE
+            logging.info('Wait for guest to be IDLE after reboot')
+            time.sleep(60)
         if not installed:
             raise NotImplemented()
 

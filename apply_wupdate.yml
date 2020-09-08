@@ -9,6 +9,7 @@
     - name: apply Windows Update
       win_updates:
         state: installed
+        reboot: yes
         whitelist:
           - "{{ kb_id }}"
       register: wupdate_res
