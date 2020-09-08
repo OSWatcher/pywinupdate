@@ -46,7 +46,8 @@ class AnsiblePlaybook(AbstractContextManager):
         for var, value in evars.items():
             self._cmd.extend(['--extra-vars', f'{var}={value}'])
         # verbosity (-vvv..)
-        self._cmd.append(f"-{''.join(['v' for i in range(verbose_lvl)])}")
+        if verbose_lvl:
+            self._cmd.append(f"-{''.join(['v' for i in range(verbose_lvl)])}")
         # playbook
         self._cmd.append(str(playbook))
         self.result = None
