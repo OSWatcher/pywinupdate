@@ -1,9 +1,9 @@
 import logging
+import time
+from pathlib import Path
+from pprint import pformat
 
 from winupdate.ansible import AnsiblePlaybook
-from pprint import pformat
-from pathlib import Path
-import time
 
 DEFAULT_WINRM_PORT = 5985
 DEFAULT_USER = 'vagrant'
@@ -48,4 +48,4 @@ def apply_winupdates(host: str, port: int = DEFAULT_WINRM_PORT, user: str = DEFA
             logging.info('Wait for guest to be IDLE after reboot')
             time.sleep(60)
         if not installed:
-            raise NotImplemented()
+            raise NotImplementedError

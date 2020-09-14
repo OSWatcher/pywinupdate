@@ -12,14 +12,9 @@ Options:
 """
 
 import sys
-import logging
-import time
-from pprint import pformat
-
-from pathlib import Path
-
 
 from docopt import docopt
+
 from winupdate.winupdate import apply_winupdates
 
 
@@ -45,5 +40,6 @@ def main():
     if ret is None:
         ret = 0
     sys.exit(ret)
+
 
 main()

@@ -1,10 +1,10 @@
-import logging
 import json
+import logging
 import subprocess
-from tempfile import NamedTemporaryFile
 from contextlib import AbstractContextManager
-from typing import Dict
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+from typing import Dict
 
 
 class AnsiblePlaybook(AbstractContextManager):
