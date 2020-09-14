@@ -15,7 +15,7 @@ import sys
 
 from docopt import docopt
 
-from winupdate.winupdate import apply_winupdates
+from winupdate.winupdate import WinUpdate
 
 
 def main_cmdline(args):
@@ -28,7 +28,8 @@ def main_cmdline(args):
     user = args['--user']
     password = args['--password']
 
-    return apply_winupdates(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
+    winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
+    return winupdate.run()
 
 
 def main():
