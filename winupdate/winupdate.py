@@ -1,14 +1,35 @@
 import logging
 import time
+from dataclasses import dataclass
 from pathlib import Path
-from pprint import pformat
-from typing import Dict
+from typing import Dict, List
 
 from winupdate.ansible import AnsiblePlaybook
 
 DEFAULT_WINRM_PORT = 5985
 DEFAULT_USER = 'vagrant'
 DEFAULT_PASSWORD = 'vagrant'
+
+
+@dataclass
+class WinUpdateInfo:
+    categories: List[str]
+    id: str
+    installed: bool
+    kb: List[str]
+    title: str
+
+
+@dataclass
+class WinUpdateModData:
+    """Represents the data returned by win_updates Ansible module"""
+    changed: bool
+    failed: bool
+    filtered_updates: Dict
+    found_update_count: int
+    installed_update_count: int
+    reboot_required: bool
+    updates: Dict[str, WinUpdateInfo]
 
 
 class WinUpdate:
@@ -32,12 +53,19 @@ class WinUpdate:
             log_lvl = logging.DEBUG
         logging.basicConfig(level=log_lvl)
 
-    def search(self) -> Dict:
+    def _ansible_res_to_python(self, result: Dict) -> WinUpdateModData:
+        # convert to dataclasses
+        search_res = WinUpdateModData(**result)
+        search_res.updates = {up_id: WinUpdateInfo(**up_info) for up_id, up_info in result['updates'].items()}
+        return search_res
+
+    def search(self) -> WinUpdateModData:
         """Search for Windows Updates"""
         with AnsiblePlaybook(self.host, self.search_playbook, self.port, self.debug_lvl, self.user,
                              self.password) as ansible:
             ansible.run()
-            return ansible.result
+            res = ansible.result
+            return self._ansible_res_to_python(res)
 
     def apply_update(self, up_uuid: str, kb_id: str):
         evars = {
@@ -50,9 +78,9 @@ class WinUpdate:
                              evars) as ansible:
             ansible.run()
             res = ansible.result
-            logging.debug(pformat(res))
-            need_reboot = res['reboot_required']
-            installed = res['updates'][up_uuid]['installed']
+            apply_res = self._ansible_res_to_python(res)
+            need_reboot = apply_res.reboot_required
+            installed = apply_res.updates[up_uuid].installed
         if need_reboot:
             # wait for guest to be IDLE
             logging.info('Wait for guest to be IDLE after reboot')
@@ -62,9 +90,7 @@ class WinUpdate:
 
     def run(self):
         wupdates = self.search()
-        # display updates
-        logging.debug('Updates: %s', pformat(wupdates))
-        for up_uuid, up_info in wupdates['updates'].items():
-            logging.info('Applying update %s', up_info['title'])
-            kb_id = up_info['kb'][0]
+        for up_uuid, up_info in wupdates.updates.items():
+            logging.info('Applying update %s', up_info.title)
+            kb_id = up_info.kb[0]
             self.apply_update(up_uuid, kb_id)
