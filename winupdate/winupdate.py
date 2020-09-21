@@ -88,9 +88,11 @@ class WinUpdate:
         if not installed:
             raise NotImplementedError
 
-    def run(self):
+    def run(self, one: bool = False):
         wupdates = self.search()
         for up_uuid, up_info in wupdates.updates.items():
             logging.info('Applying update %s', up_info.title)
             kb_id = up_info.kb[0]
             self.apply_update(up_uuid, kb_id)
+            if one:
+                return

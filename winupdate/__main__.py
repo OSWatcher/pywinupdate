@@ -9,6 +9,7 @@ Options:
     -p PORT --port PORT                 WinRM port [Default: 5985]
     -u USER --user USER                 Ansible user [Default: vagrant]
     -p PASS --password PASS             Ansible password [Default: vagrant]
+    -o --one                            Install only one update
 """
 
 import sys
@@ -27,9 +28,10 @@ def main_cmdline(args):
     debug_lvl = int(args['--debug'])
     user = args['--user']
     password = args['--password']
+    one = args['--one']
 
     winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
-    return winupdate.run()
+    return winupdate.run(one)
 
 
 def main():
