@@ -23,12 +23,12 @@ def main_cmdline(args):
     """
     Main entrypoint for docopt
     """
-    host = args['<host>']
-    port = int(args['--port'])
-    debug_lvl = int(args['--debug'])
-    user = args['--user']
-    password = args['--password']
-    one = args['--one']
+    host = args["<host>"]
+    port = int(args["--port"])
+    debug_lvl = int(args["--debug"])
+    user = args["--user"]
+    password = args["--password"]
+    one = args["--one"]
 
     winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
     return winupdate.run(one)

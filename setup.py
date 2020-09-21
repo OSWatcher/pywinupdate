@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-with open('requirements.txt') as f:
+with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
 setuptools.setup(
@@ -17,14 +17,12 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=requirements,
     entry_points={
-        'console_scripts': [
-            'pywinupdate = winupdate.__main__:main'
-        ],
+        "console_scripts": ["pywinupdate = winupdate.__main__:main"],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.7',
+    python_requires=">=3.7",
 )
