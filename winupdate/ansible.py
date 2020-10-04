@@ -17,7 +17,9 @@ class AnsiblePlaybook(AbstractContextManager):
         user="vagrant",
         password="vagrant",
         extra_vars: Dict[str, str] = None,
+        debug: bool = False,
     ):
+        self._debug = debug
         self._cmd = ["ansible-playbook"]
         # host
         self._cmd.extend(["--inventory", f"{host},"])
@@ -53,7 +55,10 @@ class AnsiblePlaybook(AbstractContextManager):
 
     def run(self):
         logging.debug(self._cmd)
-        subprocess.check_call(self._cmd)
+        output_dev = subprocess.DEVNULL
+        if self._debug:
+            output_dev = None
+        subprocess.check_call(self._cmd, stdout=output_dev, stderr=output_dev)
         # load output file
         with open(self.tempfile.name) as f:
             self.result = json.load(f)

@@ -51,6 +51,7 @@ class WinUpdate:
         self.user = user
         self.password = password
         self.debug_lvl = debug_lvl
+        self.debug_enabled = True if self.debug_lvl > 0 else False
         self.search_playbook = Path(__file__).parent / "search_wupdates.yml"
         self.apply_playbook = Path(__file__).parent / "apply_wupdate.yml"
 
@@ -69,7 +70,13 @@ class WinUpdate:
     def search(self) -> WinUpdateModData:
         """Search for Windows Updates"""
         with AnsiblePlaybook(
-            self.host, self.search_playbook, self.port, self.debug_lvl, self.user, self.password
+            self.host,
+            self.search_playbook,
+            self.port,
+            self.debug_lvl,
+            self.user,
+            self.password,
+            debug=self.debug_enabled,
         ) as ansible:
             ansible.run()
             res = ansible.result
@@ -83,7 +90,14 @@ class WinUpdate:
         }
         installed = True
         with AnsiblePlaybook(
-            self.host, self.apply_playbook, self.port, self.debug_lvl, self.user, self.password, evars
+            self.host,
+            self.apply_playbook,
+            self.port,
+            self.debug_lvl,
+            self.user,
+            self.password,
+            evars,
+            debug=self.debug_enabled,
         ) as ansible:
             ansible.run()
             res = ansible.result
@@ -98,9 +112,10 @@ class WinUpdate:
             raise NotImplementedError
 
     def run(self, one: bool = False):
+        logging.info("Searching for available Windows Updates...")
         wupdates = self.search()
         for up_uuid, up_info in wupdates.updates.items():
-            logging.info("Applying update %s", up_info.title)
+            logging.info("Applying: %s", up_info.title)
             kb_id = up_info.kb[0]
             self.apply_update(up_uuid, kb_id)
             if one:
