@@ -3,6 +3,7 @@ import logging
 import subprocess
 from contextlib import AbstractContextManager
 from pathlib import Path
+from pprint import pformat
 from tempfile import NamedTemporaryFile
 from typing import Dict
 
@@ -62,3 +63,4 @@ class AnsiblePlaybook(AbstractContextManager):
         # load output file
         with open(self.tempfile.name) as f:
             self.result = json.load(f)
+        logging.debug(pformat(self.result))
