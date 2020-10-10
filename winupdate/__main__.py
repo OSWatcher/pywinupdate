@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
 """
-Usage: winupdates.py [options] <host>
+Search and Install Windows Updates
+
+Usage:
+    winupdates.py [options] search <host>
+    winupdates.py [options] update <host>
 
 Options:
     -h --help                           Display this message
@@ -24,6 +28,7 @@ def main_cmdline(args):
     """
     Main entrypoint for docopt
     """
+    search = args["search"]
     host = args["<host>"]
     port = int(args["--port"])
     debug_lvl = int(args["--debug"])
@@ -38,6 +43,9 @@ def main_cmdline(args):
     logging.info("Found %s updates", len(wupdates.updates))
     for _up_uuid, up_info in wupdates.updates.items():
         logging.info("\t%s: %s", up_info.kb[0], up_info.title)
+    if search:
+        # just search, stop !
+        return 0
     # install only one ?
     if one:
         first_update_uuid = list(wupdates.updates.keys())[0]
