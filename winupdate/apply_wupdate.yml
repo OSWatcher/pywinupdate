@@ -19,7 +19,7 @@
           - "Updates"
           - "Windows 10"
           - "Windows 10 LTSB"
-          - "Upgrades"
+          # - "Upgrades"
           - "Definition Updates"
           - "Microsoft Defender Antivirus"
         whitelist:
