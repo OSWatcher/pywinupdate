@@ -1,5 +1,13 @@
 import nox
 
+nox.options.sessions = ["fmt", "lint"]
+
+
+@nox.session
+def fmt(session):
+    session.install("black")
+    session.run("black", "--line-length", "120", ".")
+
 
 @nox.session
 def lint(session):
@@ -16,6 +24,7 @@ def type(session):
 
 
 @nox.session
-def fmt(session):
-    session.install("black")
-    session.run("black", "--line-length", "120", ".")
+def run(session):
+    args = session.posargs
+    session.install("-r", "requirements.txt")
+    session.run("python", "-m", "winupdate", *args)
