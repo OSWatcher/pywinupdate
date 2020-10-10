@@ -151,13 +151,19 @@ class WinUpdate:
         while not self._rem_updates.empty():
             # pop next update
             up_uuid, up_info = self._rem_updates.get()
+            # increase attempt counter
+            install_counter[up_uuid] += 1
             # check attempt counter
             kb_id = up_info.kb[0]
             if install_counter[up_uuid] > DEFAULT_MAX_INSTALL_ATTEMPTS:
                 logging.warning("Skipping %s", kb_id)
                 continue
             try:
-                logging.info("[%s] Applying: [%s]: %s", update_count + 1, kb_id, up_info.title)
+                attempt_str = ""
+                # if we already attempted to install at least once
+                if install_counter[up_uuid] > 1:
+                    attempt_str = f" [{install_counter[up_uuid]}/{DEFAULT_MAX_INSTALL_ATTEMPTS}]"
+                logging.info("[%s] Applying: [%s]: %s%s", update_count + 1, kb_id, up_info.title, attempt_str)
                 self.apply_update(up_uuid, kb_id)
             except UpdateNotInstalledError:
                 logging.warning("Failed to apply update %s", kb_id)
@@ -167,6 +173,3 @@ class WinUpdate:
                 continue
             else:
                 update_count += 1
-            finally:
-                # increase attempt counter
-                install_counter[up_uuid] += 1
