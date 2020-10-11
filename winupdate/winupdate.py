@@ -142,7 +142,7 @@ class WinUpdate:
             raise NotImplementedError
 
     def apply_updates(self, wupdates: List[WinUpdateInfo]):
-        """All all Windows Updates available"""
+        """Apply all specified Windows Updates """
         # build a queue
         for up_info in wupdates:
             self._rem_updates.put((up_info.id, up_info))
