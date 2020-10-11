@@ -5,7 +5,7 @@ from contextlib import AbstractContextManager
 from pathlib import Path
 from pprint import pformat
 from tempfile import NamedTemporaryFile
-from typing import Dict
+from typing import Dict, Union
 
 
 class AnsiblePlaybook(AbstractContextManager):
@@ -17,7 +17,7 @@ class AnsiblePlaybook(AbstractContextManager):
         verbose_lvl=0,
         user="vagrant",
         password="vagrant",
-        extra_vars: Dict[str, str] = None,
+        extra_vars: Dict[str, Union[str, int]] = None,
         debug: bool = False,
     ):
         self._debug = debug

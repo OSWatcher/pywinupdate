@@ -5,7 +5,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Optional, Union
 
 from winupdate.ansible import AnsiblePlaybook
 
@@ -66,7 +66,7 @@ class WinUpdate:
         # represents remaining Windows Updates to apply
         # we use a Queue because some updates might fail, and we put them back in the Queue
         # while applying the rest
-        self._rem_updates = Queue()
+        self._rem_updates: Queue = Queue()
 
         # setup logging
         log_lvl = logging.INFO
@@ -102,7 +102,7 @@ class WinUpdate:
 
     def apply_update(self, up_uuid: str, kb_id: str):
         """Apply the specified Windows Update"""
-        evars = {
+        evars: Optional[Dict[str, Union[str, int]]] = {
             "kb_id": kb_id,
             # also increase the read timeout, as Windows Updates might break WinRM connection for quite some time
             "ansible_winrm_read_timeout_sec": 60 * 3,
@@ -148,7 +148,7 @@ class WinUpdate:
             self._rem_updates.put((up_info.id, up_info))
 
         # this counter keeps track of how many times we attempted to install a given update
-        install_counter = Counter()
+        install_counter: Counter = Counter()
         update_count = 0
         while not self._rem_updates.empty():
             # pop next update
