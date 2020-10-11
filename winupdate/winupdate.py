@@ -5,7 +5,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
-from typing import Dict, List
+from typing import Dict, Iterator, List
 
 from winupdate.ansible import AnsiblePlaybook
 
@@ -84,7 +84,7 @@ class WinUpdate:
         search_res.updates = {up_id: WinUpdateInfo(**up_info) for up_id, up_info in result["updates"].items()}
         return search_res
 
-    def search(self) -> WinUpdateModData:
+    def search(self) -> Iterator[WinUpdateInfo]:
         """Search for Windows Updates"""
         with AnsiblePlaybook(
             self.host,
@@ -97,9 +97,11 @@ class WinUpdate:
         ) as ansible:
             ansible.run()
             res = ansible.result
-            return self._ansible_res_to_python(res)
+            win_updates_data: WinUpdateModData = self._ansible_res_to_python(res)
+            yield from win_updates_data.updates.values()
 
     def apply_update(self, up_uuid: str, kb_id: str):
+        """Apply the specified Windows Update"""
         evars = {
             "kb_id": kb_id,
             # also increase the read timeout, as Windows Updates might break WinRM connection for quite some time
@@ -139,11 +141,11 @@ class WinUpdate:
         if not installed:
             raise NotImplementedError
 
-    def apply_updates(self, wupdates: WinUpdateModData):
+    def apply_updates(self, wupdates: List[WinUpdateInfo]):
         """All all Windows Updates available"""
         # build a queue
-        for up_uuid, up_info in wupdates.updates.items():
-            self._rem_updates.put((up_uuid, up_info))
+        for up_info in wupdates:
+            self._rem_updates.put((up_info.id, up_info))
 
         # this counter keeps track of how many times we attempted to install a given update
         install_counter = Counter()

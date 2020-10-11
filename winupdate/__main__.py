@@ -18,10 +18,11 @@ Options:
 
 import logging
 import sys
+from typing import List
 
 from docopt import docopt
 
-from winupdate.winupdate import WinUpdate
+from winupdate.winupdate import WinUpdate, WinUpdateInfo
 
 
 def main_cmdline(args):
@@ -39,17 +40,16 @@ def main_cmdline(args):
     winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
     # search for updates:
     logging.info("Searching for available Windows Updates...")
-    wupdates = winupdate.search()
-    logging.info("Found %s updates", len(wupdates.updates))
-    for _up_uuid, up_info in wupdates.updates.items():
+    wupdates: List[WinUpdateInfo] = list(winupdate.search())
+    logging.info("Found %s updates", len(wupdates))
+    for up_info in wupdates:
         logging.info("\t%s: %s", up_info.kb[0], up_info.title)
     if search:
         # just search, stop !
         return 0
     # install only one ?
     if one:
-        first_update_uuid = list(wupdates.updates.keys())[0]
-        wupdates.updates = {k: v for k, v in wupdates.updates.items() if k == first_update_uuid}
+        wupdates = [wupdates[0]]
     # install
     logging.info("Applying updates")
     winupdate.apply_updates(wupdates)
