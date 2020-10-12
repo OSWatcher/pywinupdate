@@ -1,0 +1,25 @@
+- name: apply Windows Update
+  win_updates:
+    state: installed
+    reboot: yes
+    category_names:
+      # default categories
+      - "CriticalUpdates"
+      - "SecurityUpdates"
+      - "UpdateRollups"
+      # additonal categories
+      - "Updates"
+      - "Windows 10"
+      - "Windows 10 LTSB"
+      # - "Upgrades"
+      - "Definition Updates"
+      - "Microsoft Defender Antivirus"
+    whitelist:
+      - "{{ kb_id }}"
+  register: wupdate_res
+
+- name: write install results to a file
+  local_action:
+    module: copy
+    content: "{{ wupdate_res }}"
+    dest: "{{ output_file }}"

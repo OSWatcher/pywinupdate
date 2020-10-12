@@ -2,17 +2,24 @@ import json
 import logging
 import subprocess
 from contextlib import AbstractContextManager
+from enum import Enum
 from pathlib import Path
 from pprint import pformat
 from tempfile import NamedTemporaryFile
 from typing import Dict, Union
 
 
-class AnsiblePlaybook(AbstractContextManager):
+class WinUpdateCmd(Enum):
+    SEARCH = 1
+    UPDATE = 2
+
+
+class WinUpdatePlaybook(AbstractContextManager):
     def __init__(
         self,
         host: str,
-        playbook: Path,
+        command: WinUpdateCmd,
+        playbook: Path = Path(__file__).parent / "playbook.yml",
         port=5985,
         verbose_lvl=0,
         user="vagrant",
@@ -26,6 +33,8 @@ class AnsiblePlaybook(AbstractContextManager):
         self._cmd.extend(["--inventory", f"{host},"])
         # connection
         self._cmd.extend(["--connection", "winrm"])
+        # tag
+        self._cmd.extend(["--tags", command.name.lower()])
         # extra vars
         evars = {
             "ansible_user": user,
@@ -51,9 +60,6 @@ class AnsiblePlaybook(AbstractContextManager):
         self._cmd.insert(-1, f"output_file={self.tempfile.name}")
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.tempfile.close()
-
     def run(self):
         logging.debug(self._cmd)
         output_dev = subprocess.DEVNULL
@@ -61,6 +67,16 @@ class AnsiblePlaybook(AbstractContextManager):
             output_dev = None
         subprocess.check_call(self._cmd, stdout=output_dev, stderr=output_dev)
         # load output file
+
         with open(self.tempfile.name) as f:
-            self.result = json.load(f)
-        logging.debug(pformat(self.result))
+            try:
+                self.result = json.load(f)
+            except json.JSONDecodeError:
+                data = f.read()
+                logging.warning("Invalid JSON: %s", data)
+                raise RuntimeError("Failed to load JSON")
+            else:
+                logging.debug(pformat(self.result))
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.tempfile.close()

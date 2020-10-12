@@ -1,0 +1,2 @@
+include winupdate/playbook.yml
+recursive-include winupdate/roles *

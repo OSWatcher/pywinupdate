@@ -15,7 +15,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    package_data={"winupdate": ["*.yml"]},
+    include_package_data=True,
     install_requires=requirements,
     entry_points={
         "console_scripts": ["pywinupdate = winupdate.__main__:main"],

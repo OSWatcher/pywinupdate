@@ -1,0 +1,14 @@
+---
+# params
+# OUTPUT:
+#   - output_file: file path where to store the JSON result of win_updates module
+- hosts: all
+  # avoid polluting even more the guest
+  gather_facts: no
+  roles:
+    - role: search
+      tags:
+        - search
+    - role: update
+      tags:
+        - update

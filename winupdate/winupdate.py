@@ -3,11 +3,10 @@ import subprocess
 import time
 from collections import Counter
 from dataclasses import dataclass
-from pathlib import Path
 from queue import Queue
 from typing import Dict, Iterator, List, Optional, Tuple, Union
 
-from winupdate.ansible import AnsiblePlaybook
+from winupdate.ansible import WinUpdateCmd, WinUpdatePlaybook
 
 DEFAULT_WINRM_PORT = 5985
 DEFAULT_USER = "vagrant"
@@ -61,8 +60,6 @@ class WinUpdate:
         self.password = password
         self.debug_lvl = debug_lvl
         self.debug_enabled = True if self.debug_lvl > 0 else False
-        self.search_playbook = Path(__file__).parent / "search_wupdates.yml"
-        self.apply_playbook = Path(__file__).parent / "apply_wupdate.yml"
         # represents remaining Windows Updates to apply
         # we use a Queue because some updates might fail, and we put them back in the Queue
         # while applying the rest
@@ -86,13 +83,13 @@ class WinUpdate:
 
     def search(self) -> Iterator[WinUpdateInfo]:
         """Search for Windows Updates"""
-        with AnsiblePlaybook(
+        with WinUpdatePlaybook(
             self.host,
-            self.search_playbook,
-            self.port,
-            self.debug_lvl,
-            self.user,
-            self.password,
+            WinUpdateCmd.SEARCH,
+            port=self.port,
+            verbose_lvl=self.debug_lvl,
+            user=self.user,
+            password=self.password,
             debug=self.debug_enabled,
         ) as ansible:
             ansible.run()
@@ -108,14 +105,14 @@ class WinUpdate:
             "ansible_winrm_read_timeout_sec": 60 * 3,
         }
         installed = False
-        with AnsiblePlaybook(
+        with WinUpdatePlaybook(
             self.host,
-            self.apply_playbook,
-            self.port,
-            self.debug_lvl,
-            self.user,
-            self.password,
-            evars,
+            WinUpdateCmd.UPDATE,
+            port=self.port,
+            verbose_lvl=self.debug_lvl,
+            user=self.user,
+            password=self.password,
+            extra_vars=evars,
             debug=self.debug_enabled,
         ) as ansible:
             try:
