@@ -30,6 +30,7 @@ def main_cmdline(args):
     Main entrypoint for docopt
     """
     search = args["search"]
+    update = args["update"]
     host = args["<host>"]
     port = int(args["--port"])
     debug_lvl = int(args["--debug"])
@@ -38,21 +39,21 @@ def main_cmdline(args):
     one = args["--one"]
 
     winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
-    # search for updates:
-    logging.info("Searching for available Windows Updates...")
-    wupdates: List[WinUpdateInfo] = list(winupdate.search())
-    logging.info("Found %s updates", len(wupdates))
-    for up_info in wupdates:
-        logging.info("\t%s: %s", up_info.kb[0], up_info.title)
     if search:
-        # just search, stop !
+        # search for updates:
+        logging.info("Searching for available Windows Updates...")
+        wupdates: List[WinUpdateInfo] = list(winupdate.search())
+        logging.info("Found %s updates", len(wupdates))
+        for up_info in wupdates:
+            logging.info("\t%s: %s", up_info.kb[0], up_info.title)
         return 0
-    # install only one ?
-    if one:
-        wupdates = [wupdates[0]]
-    # install
-    logging.info("Applying updates")
-    winupdate.apply_updates(wupdates)
+    if update:
+        logging.info("Applying updates")
+        for index, (up_info, applied) in enumerate(winupdate.update_windows(only_next=one, search_again=True)):
+            if applied:
+                kb_id = up_info.kb[0]
+                logging.info("[%s] Applied: [%s] %s", index + 1, kb_id, up_info.title)
+        return 0
     return 0
 
 

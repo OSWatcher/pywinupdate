@@ -5,7 +5,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
-from typing import Dict, Iterator, List, Optional, Union
+from typing import Dict, Iterator, List, Optional, Tuple, Union
 
 from winupdate.ansible import AnsiblePlaybook
 
@@ -175,3 +175,45 @@ class WinUpdate:
                 continue
             else:
                 update_count += 1
+
+    def update_windows(
+        self, only_next: bool = False, search_again: bool = False
+    ) -> Iterator[Tuple[WinUpdateInfo, bool]]:
+        """
+        Apply all Windows Updates available.
+        Yields Updates that were attempted to be installed (successfully or not)
+
+        :param only_next: install only the next available update
+        :param search_again: continue to search until there are no updates available
+        """
+        done = False
+        while not done:
+            # assume we are done
+            done = True
+            # assume we have not found any updates
+            updates_found = False
+            # search for updates
+            for up_info in self.search():
+                # at least one update needs to be installed
+                # not done
+                updates_found = True
+                # assume update did not installed
+                applied = False
+                kb_id = up_info.kb[0]
+                try:
+                    # try to install update
+                    self.apply_update(up_info.id, kb_id)
+                except UpdateNotInstalledError:
+                    pass
+                else:
+                    applied = True
+                finally:
+                    yield up_info, applied
+                if only_next:
+                    return
+            if updates_found and search_again:
+                # we just found updates in the last search
+                # and we have been required to search until there are no more updates available
+                # so not done yet
+                logging.debug("Updates has been found. Searching again")
+                done = False
