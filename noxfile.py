@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import nox
 
 nox.options.sessions = ["fmt", "lint"]
@@ -27,4 +29,14 @@ def type(session):
 def run(session):
     args = session.posargs
     session.install("-r", "requirements.txt")
+    session.run("python", "-m", "winupdate", *args)
+
+
+@nox.session
+def run_installed(session):
+    """Install the package and run it from a different directory to test data files inclusion"""
+    args = session.posargs
+    session.install(".")
+    # chdir to home dir
+    session.chdir(str(Path.home()))
     session.run("python", "-m", "winupdate", *args)
