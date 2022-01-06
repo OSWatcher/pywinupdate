@@ -124,7 +124,14 @@ class WinUpdate:
             apply_res = self._ansible_res_to_python(res)
             need_reboot = apply_res.reboot_required
             if apply_res.installed_update_count and apply_res.updates:
-                installed = apply_res.updates[up_uuid].installed
+                try:
+                    installed = apply_res.updates[up_uuid].installed
+                except KeyError:
+                    # up_uuid doesn't match
+                    logging.warning("up_uuid changed !")
+                    # assumed installed for now
+                    # TODO
+                    installed = True
             else:
                 raise UpdateNotInstalledError
             if len(apply_res.updates) > 1:

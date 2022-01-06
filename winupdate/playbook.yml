@@ -5,6 +5,12 @@
 - hosts: all
   # avoid polluting even more the guest
   gather_facts: no
+  pre_tasks:
+    - name: Wait for guest connection
+      wait_for_connection:
+        timeout: 900
+      tags:
+        - always
   roles:
     - role: search
       tags:

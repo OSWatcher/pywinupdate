@@ -8,6 +8,9 @@ from pprint import pformat
 from tempfile import NamedTemporaryFile
 from typing import Dict, Union
 
+# increase default winrm timeout
+ANSIBLE_WINRM_TIMEOUT = 90
+
 
 class WinUpdateCmd(Enum):
     SEARCH = 1
@@ -41,6 +44,7 @@ class WinUpdatePlaybook(AbstractContextManager):
             "ansible_password": password,
             "ansible_port": port,
             "ansible_winrm_scheme": "http",
+            "ansible_winrm_read_timeout_sec": ANSIBLE_WINRM_TIMEOUT
         }
         if extra_vars:
             evars.update(extra_vars)
