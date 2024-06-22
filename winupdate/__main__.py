@@ -38,7 +38,9 @@ def main_cmdline(args):
     password = args["--password"]
     one = args["--one"]
 
-    winupdate = WinUpdate(host, port=port, user=user, password=password, debug_lvl=debug_lvl)
+    winupdate = WinUpdate(
+        host, port=port, user=user, password=password, debug_lvl=debug_lvl
+    )
     if search:
         # search for updates:
         logging.info("Searching for available Windows Updates...")
@@ -49,7 +51,9 @@ def main_cmdline(args):
         return 0
     if update:
         logging.info("Applying updates")
-        for index, (up_info, applied) in enumerate(winupdate.update_windows(only_next=one, search_again=True)):
+        for index, (up_info, applied) in enumerate(
+            winupdate.update_windows(only_next=one, search_again=True)
+        ):
             if applied:
                 kb_id = up_info.kb[0]
                 logging.info("[%s] Applied: [%s] %s", index + 1, kb_id, up_info.title)

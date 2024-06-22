@@ -10,6 +10,7 @@ from typing import Dict, Union
 
 # increase default winrm timeout
 ANSIBLE_WINRM_TIMEOUT = 90
+PLAYBOOK_PATH = Path(__file__).parent / "playbook.yml"
 
 
 class WinUpdateCmd(Enum):
@@ -22,7 +23,7 @@ class WinUpdatePlaybook(AbstractContextManager):
         self,
         host: str,
         command: WinUpdateCmd,
-        playbook: Path = Path(__file__).parent / "playbook.yml",
+        playbook: Path = PLAYBOOK_PATH,
         port=5985,
         verbose_lvl=0,
         user="vagrant",
@@ -44,7 +45,7 @@ class WinUpdatePlaybook(AbstractContextManager):
             "ansible_password": password,
             "ansible_port": port,
             "ansible_winrm_scheme": "http",
-            "ansible_winrm_read_timeout_sec": ANSIBLE_WINRM_TIMEOUT
+            "ansible_winrm_read_timeout_sec": ANSIBLE_WINRM_TIMEOUT,
         }
         if extra_vars:
             evars.update(extra_vars)

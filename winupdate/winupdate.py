@@ -78,7 +78,10 @@ class WinUpdate:
         if "failed_update_count" not in result:
             result["failed_update_count"] = 0
         search_res = WinUpdateModData(**result)
-        search_res.updates = {up_id: WinUpdateInfo(**up_info) for up_id, up_info in result["updates"].items()}
+        search_res.updates = {
+            up_id: WinUpdateInfo(**up_info)
+            for up_id, up_info in result["updates"].items()
+        }
         return search_res
 
     def search(self) -> Iterator[WinUpdateInfo]:
@@ -136,7 +139,8 @@ class WinUpdate:
                 raise UpdateNotInstalledError
             if len(apply_res.updates) > 1:
                 logging.warning(
-                    "Multiple updates were installed: %s", [up_info.kb[0] for up_info in apply_res.updates.values()]
+                    "Multiple updates were installed: %s",
+                    [up_info.kb[0] for up_info in apply_res.updates.values()],
                 )
         if need_reboot:
             # wait for guest to be IDLE
@@ -146,7 +150,7 @@ class WinUpdate:
             raise NotImplementedError
 
     def apply_updates(self, wupdates: List[WinUpdateInfo]):
-        """Apply all specified Windows Updates """
+        """Apply all specified Windows Updates"""
         # build a queue
         for up_info in wupdates:
             self._rem_updates.put((up_info.id, up_info))
@@ -168,8 +172,16 @@ class WinUpdate:
                 attempt_str = ""
                 # if we already attempted to install at least once
                 if install_counter[up_uuid] > 1:
-                    attempt_str = f" [{install_counter[up_uuid]}/{DEFAULT_MAX_INSTALL_ATTEMPTS}]"
-                logging.info("[%s] Applying: [%s]: %s%s", update_count + 1, kb_id, up_info.title, attempt_str)
+                    attempt_str = (
+                        f" [{install_counter[up_uuid]}/{DEFAULT_MAX_INSTALL_ATTEMPTS}]"
+                    )
+                logging.info(
+                    "[%s] Applying: [%s]: %s%s",
+                    update_count + 1,
+                    kb_id,
+                    up_info.title,
+                    attempt_str,
+                )
                 self.apply_update(up_uuid, kb_id)
             except UpdateNotInstalledError:
                 logging.warning("Failed to apply update %s", kb_id)
