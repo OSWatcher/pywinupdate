@@ -34,8 +34,8 @@ fmt = "black ."
 _flake8 = "flake8 --show-source --statistics ."
 _isort = "isort ."
 lint = ["_flake8", "_isort"]
-type = "mypy -p neogit"
-ccode = ["fmt", "lint", "type"]
+type = "mypy -p winupdate"
+ccode = ["fmt", "lint"]
 
 [tool.isort]
 profile = "black"
