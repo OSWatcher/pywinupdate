@@ -21,6 +21,7 @@ class UpdateNotInstalledError(Exception):
 @dataclass
 class WinUpdateInfo:
     categories: List[str]
+    downloaded: bool
     id: str
     installed: bool
     kb: List[str]
@@ -38,6 +39,7 @@ class WinUpdateModData:
     found_update_count: int
     installed_update_count: int
     reboot_required: bool
+    rebooted: bool
     updates: Dict[str, WinUpdateInfo]
 
 
