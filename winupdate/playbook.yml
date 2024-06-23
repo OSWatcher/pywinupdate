@@ -3,6 +3,9 @@
 # OUTPUT:
 #   - output_file: file path where to store the JSON result of win_updates module
 - hosts: all
+  vars:
+    ansible_stdout_callback: yaml
+    ansible_stderr_callback: yaml
   # avoid polluting even more the guest
   gather_facts: no
   pre_tasks:
