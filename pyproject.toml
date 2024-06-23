@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "winupdate"
+version = "0.0.1"
+authors = ["Mathieu Tarral <mathieu.tarral@protonmail.com>"]
+description = "Python controlled search and installation of Windows updates via WinRM and Ansible"
+readme = "README.md"
+include = ["winupdate/playbook.yml", "windupdate/roles/*"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pywinrm = "^0.4.3"
+docopt = "^0.6.2"
+ansible = "10.1.0"
+
+[tool.poetry.group.dev.dependencies]
+poethepoet = "^0.26.1"
+flake8 = "^7.0.0"
+mypy = "^1.10.0"
+isort = "^5.13.2"
+flake8-bugbear = "^24.4.26"
+black = "^24.4.2"
+pytest = "8.2.2"
+
+
+[tool.poetry.scripts]
+pywinupdate = "winupdate.__main__:main"
+
+[tool.poe.tasks]
+fmt = "black ."
+_flake8 = "flake8 --show-source --statistics ."
+_isort = "isort ."
+lint = ["_flake8", "_isort"]
+type = "mypy -p winupdate"
+ccode = ["fmt", "lint"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
