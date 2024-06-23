@@ -2,21 +2,35 @@
 
 [[package]]
 name = "ansible"
-version = "2.9.13"
+version = "10.1.0"
 description = "Radically simple IT automation"
 optional = false
-python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
+python-versions = ">=3.10"
 files = [
-    {file = "ansible-2.9.13.tar.gz", hash = "sha256:3ab21588992fbfe9de3173aefd63da1267dc12892a60f5cfdc055fe19c549644"},
+    {file = "ansible-10.1.0-py3-none-any.whl", hash = "sha256:05b761c4628a0fc216478a5e3c111613c61fd13280846fa84843a63c36c7b1b6"},
+    {file = "ansible-10.1.0.tar.gz", hash = "sha256:7d8c44557f570687306e19d0e3296ad230593cb12bda35dcfc9274a6063af22a"},
+]
+
+[package.dependencies]
+ansible-core = ">=2.17.1,<2.18.0"
+
+[[package]]
+name = "ansible-core"
+version = "2.17.1"
+description = "Radically simple IT automation"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "ansible_core-2.17.1-py3-none-any.whl", hash = "sha256:aaaccf6a9fe05968821a02079c5ec4c33a7fe5f02d9f5d94f7c3a69f71eab675"},
+    {file = "ansible_core-2.17.1.tar.gz", hash = "sha256:46449d71bbd17c3ce85fe379721d88d333fd23637b5c3798e83fae5fa38def00"},
 ]
 
 [package.dependencies]
 cryptography = "*"
-jinja2 = "*"
-PyYAML = "*"
-
-[package.extras]
-azure = ["azure-cli-core (==2.0.35)", "azure-cli-nspkg (==3.0.2)", "azure-common (==1.1.11)", "azure-graphrbac (==0.40.0)", "azure-keyvault (==1.0.0a1)", "azure-mgmt-authorization (==0.51.1)", "azure-mgmt-automation (==0.1.1)", "azure-mgmt-batch (==5.0.1)", "azure-mgmt-cdn (==3.0.0)", "azure-mgmt-compute (==4.4.0)", "azure-mgmt-containerinstance (==1.4.0)", "azure-mgmt-containerregistry (==2.0.0)", "azure-mgmt-containerservice (==4.4.0)", "azure-mgmt-cosmosdb (==0.5.2)", "azure-mgmt-devtestlabs (==3.0.0)", "azure-mgmt-dns (==2.1.0)", "azure-mgmt-hdinsight (==0.1.0)", "azure-mgmt-iothub (==0.7.0)", "azure-mgmt-keyvault (==1.1.0)", "azure-mgmt-loganalytics (==0.2.0)", "azure-mgmt-marketplaceordering (==0.1.0)", "azure-mgmt-monitor (==0.5.2)", "azure-mgmt-network (==2.3.0)", "azure-mgmt-nspkg (==2.0.0)", "azure-mgmt-rdbms (==1.4.1)", "azure-mgmt-redis (==5.0.0)", "azure-mgmt-resource (==2.1.0)", "azure-mgmt-servicebus (==0.5.3)", "azure-mgmt-sql (==0.10.0)", "azure-mgmt-storage (==3.1.0)", "azure-mgmt-trafficmanager (==0.50.0)", "azure-mgmt-web (==0.41.0)", "azure-nspkg (==2.0.0)", "azure-storage (==0.35.1)", "msrest (==0.6.1)", "msrestazure (==0.5.0)", "packaging", "requests[security]", "xmltodict"]
+jinja2 = ">=3.0.0"
+packaging = "*"
+PyYAML = ">=5.1"
+resolvelib = ">=0.5.3,<1.1.0"
 
 [[package]]
 name = "attrs"
@@ -859,6 +873,23 @@ pyspnego = ">=0.4.0"
 requests = ">=2.0.0"
 
 [[package]]
+name = "resolvelib"
+version = "1.0.1"
+description = "Resolve abstract dependencies into concrete ones"
+optional = false
+python-versions = "*"
+files = [
+    {file = "resolvelib-1.0.1-py2.py3-none-any.whl", hash = "sha256:d2da45d1a8dfee81bdd591647783e340ef3bcb104b54c383f70d422ef5cc7dbf"},
+    {file = "resolvelib-1.0.1.tar.gz", hash = "sha256:04ce76cbd63fded2078ce224785da6ecd42b9564b1390793f64ddecbe997b309"},
+]
+
+[package.extras]
+examples = ["html5lib", "packaging", "pygraphviz", "requests"]
+lint = ["black", "flake8", "isort", "mypy", "types-requests"]
+release = ["build", "towncrier", "twine"]
+test = ["commentjson", "packaging", "pytest"]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -961,4 +992,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2b8d48a367161ac95cc51bb0df92f333da6db30da048ef435ab6a4fc88c13cfd"
+content-hash = "6cd41576bceb0c5bd7fd07a0ff60c17868a26cf9f52d2d44feea144253821c20"
