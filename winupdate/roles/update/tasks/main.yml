@@ -14,7 +14,7 @@
       # - "Upgrades"
       - "Definition Updates"
       - "Microsoft Defender Antivirus"
-    whitelist:
+    accept_list:
       - "{{ kb_id }}"
   register: wupdate_res
 
