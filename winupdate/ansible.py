@@ -1,8 +1,10 @@
 import json
 import logging
+import os
 import subprocess
 from contextlib import AbstractContextManager
 from enum import Enum
+from importlib.resources import as_file, files
 from pathlib import Path
 from pprint import pformat
 from tempfile import NamedTemporaryFile
@@ -10,7 +12,12 @@ from typing import Dict, Union
 
 # increase default winrm timeout
 ANSIBLE_WINRM_TIMEOUT = 90
-PLAYBOOK_PATH = Path(__file__).parent / "playbook.yml"
+
+
+def get_resource_path(resource_name: str) -> Path:
+    with files(__package__).joinpath(resource_name) as f:
+        with as_file(f) as path:
+            return Path(path)
 
 
 class WinUpdateCmd(Enum):
@@ -23,7 +30,7 @@ class WinUpdatePlaybook(AbstractContextManager):
         self,
         host: str,
         command: WinUpdateCmd,
-        playbook: Path = PLAYBOOK_PATH,
+        playbook: Path = None,
         port=5985,
         verbose_lvl=0,
         user="vagrant",
@@ -55,6 +62,8 @@ class WinUpdatePlaybook(AbstractContextManager):
         if verbose_lvl:
             self._cmd.append(f"-{''.join(['v' for i in range(verbose_lvl)])}")
         # playbook
+        if not playbook:
+            playbook = get_resource_path("playbook.yml")
         self._cmd.append(str(playbook))
         self.result = None
 
@@ -70,7 +79,11 @@ class WinUpdatePlaybook(AbstractContextManager):
         output_dev = subprocess.DEVNULL
         if self._debug:
             output_dev = None
-        subprocess.check_call(self._cmd, stdout=output_dev, stderr=output_dev)
+        environ = os.environ.copy()
+        environ["ANSIBLE_CONFIG"] = str(get_resource_path("ansible.cfg"))
+        subprocess.check_call(
+            self._cmd, stdout=output_dev, stderr=output_dev, env=environ
+        )
         # load output file
 
         with open(self.tempfile.name) as f:
