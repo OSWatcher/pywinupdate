@@ -20,12 +20,14 @@ class UpdateNotInstalledError(Exception):
 
 @dataclass
 class WinUpdateInfo:
+    id: str
+    title: str
     categories: List[str]
     downloaded: bool
-    id: str
     installed: bool
     kb: List[str]
-    title: str
+    failure_hresult_code: Optional[int] = None
+    failure_msg: Optional[str] = None
 
 
 @dataclass
