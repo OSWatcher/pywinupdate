@@ -1,10 +1,11 @@
 [tool.poetry]
-name = "winupdate"
+name = "pywinupdate"
 version = "0.0.1"
 authors = ["Mathieu Tarral <mathieu.tarral@protonmail.com>"]
 description = "Python controlled search and installation of Windows updates via WinRM and Ansible"
 readme = "README.md"
-include = ["winupdate/playbook.yml", "windupdate/roles/*"]
+license = "Apache-2.0"
+include = ["winupdate/playbook.yml", "winupdate/roles/*"]
 
 [build-system]
 requires = ["poetry-core"]
